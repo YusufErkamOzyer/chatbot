@@ -1,3 +1,4 @@
+import 'package:chatbot/core/components/app_top_bar.dart';
 import 'package:chatbot/core/components/text_message.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +8,7 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chat Screen')),
+      appBar: AppTopBar(),
       body: Center(
         child: Container(
           width: double.infinity,
