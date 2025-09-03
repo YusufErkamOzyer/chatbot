@@ -1,6 +1,8 @@
 import 'package:chatbot/core/color_constants.dart';
 import 'package:chatbot/core/widgets/chat_bot_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 
 class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   const AppTopBar({super.key});
@@ -12,10 +14,15 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       leading: IconButton(
         icon: const Icon(Icons.close, color: Colors.black),
-        onPressed: () {},
+        onPressed: () {
+          SystemNavigator.pop();
+        },
       ),
       title: const ChatBotText(data: "ChatBot", type: MessageType.system),
       centerTitle: true,
+      actions: [
+        SvgPicture.asset('assets/logo/chatbot.svg', width: 50, height: 50),
+      ],
     );
   }
 
