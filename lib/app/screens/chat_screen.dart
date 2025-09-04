@@ -1,4 +1,5 @@
 import 'package:chatbot/core/components/app_top_bar.dart';
+import 'package:chatbot/core/components/system_chips.dart';
 import 'package:chatbot/core/components/text_message.dart';
 import 'package:chatbot/core/components/text_sender.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,10 @@ class ChatScreen extends StatelessWidget {
           decoration: BoxDecoration(color: Colors.grey[200]),
           padding: EdgeInsets.all(16.0),
           child: Column(
-            children: [TextMessage(type: SenderType.home, time: "20:50")],
+            children: [
+              SystemChips(label: "Bugün"),
+              TextMessage(type: SenderType.home, time: "20:50"),
+            ],
           ),
         ),
       ),
