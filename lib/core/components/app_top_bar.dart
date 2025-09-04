@@ -1,4 +1,3 @@
-import 'package:chatbot/core/color_constants.dart';
 import 'package:chatbot/core/widgets/chat_bot_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
