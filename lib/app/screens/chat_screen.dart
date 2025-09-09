@@ -5,9 +5,11 @@ import 'package:chatbot/core/components/app_top_bar.dart';
 import 'package:chatbot/core/components/system_chips.dart';
 import 'package:chatbot/core/components/text_message.dart';
 import 'package:chatbot/core/components/text_sender.dart';
+import 'package:chatbot/core/service/chatbot_service.dart';
 import 'package:chatbot/core/utils/timestamp_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,7 +23,18 @@ class ChatScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppTopBar(),
         bottomNavigationBar: SafeArea(
-          child: TextSender(controller: TextEditingController()),
+          child: TextSender(
+            controller: TextEditingController(),
+            onPressed: () async {
+              final res = await ChatbotService().sendMessage("Merhaba");
+              if (res != null) {
+                if (kDebugMode) {
+                  print(res.response);
+                  print(res.intents);
+                }
+              }
+            },
+          ),
         ),
         body: Center(
           child: BlocBuilder<ChatBloc, ChatState>(
