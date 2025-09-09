@@ -1,71 +1,85 @@
+import 'package:chatbot/app/screens/chat_bloc.dart';
+import 'package:chatbot/app/screens/chat_event.dart';
+import 'package:chatbot/app/screens/chat_state.dart';
 import 'package:chatbot/core/components/app_top_bar.dart';
 import 'package:chatbot/core/components/system_chips.dart';
 import 'package:chatbot/core/components/text_message.dart';
 import 'package:chatbot/core/components/text_sender.dart';
+import 'package:chatbot/core/utils/timestamp_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
-  Future<void> fetchMessages() async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('chats')
-        .doc('HDzEaDTOYUMPIXukoIbT')
-        .collection('messages')
-        .orderBy('timestamp')
-        .get();
-
-    for (var doc in snapshot.docs) {
-      print(doc.data());
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppTopBar(),
-      bottomSheet: TextSender(controller: TextEditingController()),
-      body: Center(
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(color: Colors.grey[200]),
-          padding: EdgeInsets.all(16.0),
-          child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('chats')
-                .doc('HDzEaDTOYUMPIXukoIbT')
-                .collection('messages')
-                .orderBy('timestamp', descending: true)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+    return BlocProvider(
+      create: (_) => ChatBloc()..add(LoadMessages()),
+      child: Scaffold(
+        appBar: AppTopBar(),
+        bottomNavigationBar: SafeArea(
+          child: TextSender(controller: TextEditingController()),
+        ),
+        body: Center(
+          child: BlocBuilder<ChatBloc, ChatState>(
+            builder: (BuildContext context, state) {
+              if (state is ChatLoading) {
+                return const CircularProgressIndicator();
+              } else if (state is ChatSuccess) {
+                final messages = state.messages;
+
+                final groupedMessages = groupBy(messages, (msg) {
+                  final timestamp = msg['timestamp'] as Timestamp;
+                  final date = timestamp.toDate();
+                  return DateTime(date.year, date.month, date.day);
+                });
+
+                final sortedDates = groupedMessages.keys.toList()
+                  ..sort((a, b) => b.compareTo(a));
+
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListView(
+                    reverse: true,
+                    children: sortedDates.expand((date) {
+                      final msgs = groupedMessages[date]!;
+
+                      return [
+                        ...msgs.map((msg) {
+                          final sender = msg['sender'] == "user"
+                              ? SenderType.home
+                              : SenderType.away;
+                          final text = msg['message'];
+                          final timestamp = msg['timestamp'] as Timestamp;
+                          final time = TimestampUtil.formatTimestampHour(
+                            timestamp,
+                          );
+                          // final date = timestamp.toDate();
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: TextMessage(
+                              type: sender,
+                              time: time,
+                              data: text,
+                            ),
+                          );
+                        }),
+                        Center(
+                          child: SystemChips(
+                            label: TimestampUtil.formatDate(date),
+                          ),
+                        ),
+                      ];
+                    }).toList(),
+                  ),
+                );
+              } else if (state is ChatError) {
+                return Text('Error: ${state.message}');
               }
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return Text('No messages found.');
-              }
-
-              final messages = snapshot.data!.docs;
-
-              return ListView.builder(
-                reverse: true,
-                itemCount: messages.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return SystemChips(label: 'Bugün');
-                  }
-                  final message = messages[index - 1];
-                  final data = message.data() as Map<String, dynamic>;
-
-                  return TextMessage(
-                    data: data['message'] ?? '',
-                    type: SenderType.home,
-                    time: '',
-                  );
-                },
-              );
+              return const Text('Press button to load messages');
             },
           ),
         ),

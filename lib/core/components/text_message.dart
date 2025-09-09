@@ -26,33 +26,46 @@ class TextMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final maxWidth = MediaQuery.of(context).size.width * 0.65;
+
     return Row(
       mainAxisAlignment: type == SenderType.home
           ? MainAxisAlignment.end
           : MainAxisAlignment.start,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-          width: 200,
-          decoration: BoxDecoration(
-            color: _getBackgroundColor(type),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ChatBotText(
-                data: data,
-                type: type == SenderType.home
-                    ? MessageType.home
-                    : MessageType.away,
-              ),
-              Align(
-                alignment: Alignment.centerRight, // sadece time sağa hizalanır
-                child: ChatBotText(data: time, type: MessageType.system),
-              ),
-            ],
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxWidth),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+            decoration: BoxDecoration(
+              color: _getBackgroundColor(type),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Stack(
+              children: [
+                ChatBotText(
+                  data: data,
+                  type: type == SenderType.home
+                      ? MessageType.home
+                      : MessageType.away,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 15),
+                  child: ChatBotText(
+                    data: data,
+                    type: type == SenderType.home
+                        ? MessageType.home
+                        : MessageType.away,
+                  ),
+                ),
+
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: ChatBotText(data: time, type: MessageType.system),
+                ),
+              ],
+            ),
           ),
         ),
       ],
