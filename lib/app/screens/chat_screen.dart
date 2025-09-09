@@ -57,7 +57,7 @@ class ChatScreen extends StatelessWidget {
                           final time = TimestampUtil.formatTimestampHour(
                             timestamp,
                           );
-
+                          // final date = timestamp.toDate();
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: TextMessage(
