@@ -45,6 +45,9 @@ class ChatScreen extends StatelessWidget {
                     context.read<ChatBloc>().add(
                       AddFirebaseMessage(state.currentText, "user"),
                     );
+                    context.read<ChatBloc>().add(
+                      SendMessageToChatbot(state.currentText),
+                    );
                   },
                 ),
               ),
