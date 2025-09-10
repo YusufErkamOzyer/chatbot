@@ -5,7 +5,13 @@ import 'package:flutter/material.dart';
 class TextSender extends StatelessWidget {
   final VoidCallback? onPressed;
   final TextEditingController controller;
-  const TextSender({super.key, this.onPressed, required this.controller});
+  final ValueChanged<String>? onChanged;
+  const TextSender({
+    super.key,
+    this.onPressed,
+    required this.controller,
+    this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +19,12 @@ class TextSender extends StatelessWidget {
       padding: EdgeInsetsGeometry.only(bottom: 16.0, left: 16.0, right: 16.0),
       child: Row(
         children: [
-          Expanded(child: ChatBotTextField(conroller: controller)),
+          Expanded(
+            child: ChatBotTextField(
+              conroller: controller,
+              onChanged: onChanged,
+            ),
+          ),
           ChatBotIconButton(onPressed: onPressed),
         ],
       ),

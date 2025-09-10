@@ -7,3 +7,8 @@ class SendMessage extends ChatEvent {
   final String sender;
   SendMessage(this.message, this.sender);
 }
+
+class UpdateCurrentText extends ChatEvent {
+  final String currentText;
+  UpdateCurrentText(this.currentText);
+}

@@ -18,6 +18,7 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = TextEditingController();
     return BlocProvider(
       create: (_) => ChatBloc()..add(LoadMessages()),
       child: BlocBuilder<ChatBloc, ChatState>(
@@ -37,16 +38,11 @@ class ChatScreen extends StatelessWidget {
               appBar: AppTopBar(),
               bottomNavigationBar: SafeArea(
                 child: TextSender(
-                  controller: TextEditingController(),
-                  onPressed: () async {
-                    final res = await ChatbotService().sendMessage("Merhaba");
-                    if (res != null) {
-                      if (kDebugMode) {
-                        print(res.response);
-                        print(res.intents);
-                      }
-                    }
+                  onChanged: (value) {
+                    context.read<ChatBloc>().add(UpdateCurrentText(value));
                   },
+                  controller: controller,
+                  onPressed: () {},
                 ),
               ),
               body: Center(
