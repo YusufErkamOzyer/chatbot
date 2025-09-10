@@ -5,9 +5,11 @@ import 'package:chatbot/core/components/app_top_bar.dart';
 import 'package:chatbot/core/components/system_chips.dart';
 import 'package:chatbot/core/components/text_message.dart';
 import 'package:chatbot/core/components/text_sender.dart';
+import 'package:chatbot/core/service/chatbot_service.dart';
 import 'package:chatbot/core/utils/timestamp_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,31 +18,35 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = TextEditingController();
     return BlocProvider(
       create: (_) => ChatBloc()..add(LoadMessages()),
-      child: Scaffold(
-        appBar: AppTopBar(),
-        bottomNavigationBar: SafeArea(
-          child: TextSender(controller: TextEditingController()),
-        ),
-        body: Center(
-          child: BlocBuilder<ChatBloc, ChatState>(
-            builder: (BuildContext context, state) {
-              if (state is ChatLoading) {
-                return const CircularProgressIndicator();
-              } else if (state is ChatSuccess) {
-                final messages = state.messages;
+      child: BlocBuilder<ChatBloc, ChatState>(
+        builder: (BuildContext context, ChatState state) {
+          if (state is ChatSuccess) {
+            final messages = state.messages;
 
-                final groupedMessages = groupBy(messages, (msg) {
-                  final timestamp = msg['timestamp'] as Timestamp;
-                  final date = timestamp.toDate();
-                  return DateTime(date.year, date.month, date.day);
-                });
+            final groupedMessages = groupBy(messages, (msg) {
+              final timestamp = msg['timestamp'] as Timestamp;
+              final date = timestamp.toDate();
+              return DateTime(date.year, date.month, date.day);
+            });
 
-                final sortedDates = groupedMessages.keys.toList()
-                  ..sort((a, b) => b.compareTo(a));
-
-                return Padding(
+            final sortedDates = groupedMessages.keys.toList()
+              ..sort((a, b) => b.compareTo(a));
+            return Scaffold(
+              appBar: AppTopBar(),
+              bottomNavigationBar: SafeArea(
+                child: TextSender(
+                  onChanged: (value) {
+                    context.read<ChatBloc>().add(UpdateCurrentText(value));
+                  },
+                  controller: controller,
+                  onPressed: () {},
+                ),
+              ),
+              body: Center(
+                child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ListView(
                     reverse: true,
@@ -75,14 +81,19 @@ class ChatScreen extends StatelessWidget {
                       ];
                     }).toList(),
                   ),
-                );
-              } else if (state is ChatError) {
-                return Text('Error: ${state.message}');
-              }
-              return const Text('Press button to load messages');
-            },
-          ),
-        ),
+                ),
+              ),
+            );
+          } else if (state is ChatLoading) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          } else if (state is ChatError) {
+            return Scaffold(body: Center(child: Text(state.message)));
+          } else {
+            return const Scaffold(body: Center(child: Text("Unknown state")));
+          }
+        },
       ),
     );
   }

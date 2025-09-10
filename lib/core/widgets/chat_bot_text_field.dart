@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 
 class ChatBotTextField extends StatelessWidget {
   final TextEditingController conroller;
-  const ChatBotTextField({super.key, required this.conroller});
+  final ValueChanged<String>? onChanged;
+  const ChatBotTextField({super.key, required this.conroller, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      onChanged: onChanged,
       controller: conroller,
       decoration: InputDecoration(
         fillColor: ColorPalette.appColor1,
