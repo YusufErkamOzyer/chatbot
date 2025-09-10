@@ -18,7 +18,6 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = TextEditingController();
     return BlocProvider(
       create: (_) => ChatBloc()..add(LoadMessages()),
       child: BlocBuilder<ChatBloc, ChatState>(
@@ -41,8 +40,12 @@ class ChatScreen extends StatelessWidget {
                   onChanged: (value) {
                     context.read<ChatBloc>().add(UpdateCurrentText(value));
                   },
-                  controller: controller,
-                  onPressed: () {},
+                  controller: TextEditingController(text: state.currentText),
+                  onPressed: () {
+                    context.read<ChatBloc>().add(
+                      AddFirebaseMessage(state.currentText, "user"),
+                    );
+                  },
                 ),
               ),
               body: Center(
