@@ -2,6 +2,7 @@ import 'package:chatbot/app/screens/chat_bloc.dart';
 import 'package:chatbot/app/screens/chat_event.dart';
 import 'package:chatbot/app/screens/chat_state.dart';
 import 'package:chatbot/core/components/app_top_bar.dart';
+import 'package:chatbot/core/components/chatbot_loading.dart';
 import 'package:chatbot/core/components/system_chips.dart';
 import 'package:chatbot/core/components/text_message.dart';
 import 'package:chatbot/core/components/text_sender.dart';
@@ -54,38 +55,45 @@ class ChatScreen extends StatelessWidget {
               body: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ListView(
-                    reverse: true,
-                    children: sortedDates.expand((date) {
-                      final msgs = groupedMessages[date]!;
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView(
+                          reverse: true,
+                          children: sortedDates.expand((date) {
+                            final msgs = groupedMessages[date]!;
 
-                      return [
-                        ...msgs.map((msg) {
-                          final sender = msg['sender'] == "user"
-                              ? SenderType.home
-                              : SenderType.away;
-                          final text = msg['message'];
-                          final timestamp = msg['timestamp'] as Timestamp;
-                          final time = TimestampUtil.formatTimestampHour(
-                            timestamp,
-                          );
-                          // final date = timestamp.toDate();
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: TextMessage(
-                              type: sender,
-                              time: time,
-                              data: text,
-                            ),
-                          );
-                        }),
-                        Center(
-                          child: SystemChips(
-                            label: TimestampUtil.formatDate(date),
-                          ),
+                            return [
+                              ...msgs.map((msg) {
+                                final sender = msg['sender'] == "user"
+                                    ? SenderType.home
+                                    : SenderType.away;
+                                final text = msg['message'];
+                                final timestamp = msg['timestamp'] as Timestamp;
+                                final time = TimestampUtil.formatTimestampHour(
+                                  timestamp,
+                                );
+                                // final date = timestamp.toDate();
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: TextMessage(
+                                    type: sender,
+                                    time: time,
+                                    data: text,
+                                  ),
+                                );
+                              }),
+                              Center(
+                                child: SystemChips(
+                                  label: TimestampUtil.formatDate(date),
+                                ),
+                              ),
+                            ];
+                          }).toList(),
                         ),
-                      ];
-                    }).toList(),
+                      ),
+                      ChatbotLoading(isLoading: true),
+                    ],
                   ),
                 ),
               ),
