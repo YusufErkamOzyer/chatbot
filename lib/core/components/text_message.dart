@@ -27,6 +27,7 @@ class TextMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final maxWidth = MediaQuery.of(context).size.width * 0.65;
+    final minWidth = MediaQuery.of(context).size.width * 0.13;
 
     return Row(
       mainAxisAlignment: type == SenderType.home
@@ -34,7 +35,7 @@ class TextMessage extends StatelessWidget {
           : MainAxisAlignment.start,
       children: [
         ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: maxWidth),
+          constraints: BoxConstraints(maxWidth: maxWidth, minWidth: minWidth),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
             decoration: BoxDecoration(
