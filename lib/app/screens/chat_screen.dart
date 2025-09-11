@@ -6,11 +6,9 @@ import 'package:chatbot/core/components/chatbot_loading.dart';
 import 'package:chatbot/core/components/system_chips.dart';
 import 'package:chatbot/core/components/text_message.dart';
 import 'package:chatbot/core/components/text_sender.dart';
-import 'package:chatbot/core/service/chatbot_service.dart';
 import 'package:chatbot/core/utils/timestamp_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -76,7 +74,6 @@ class ChatScreen extends StatelessWidget {
                                 final time = TimestampUtil.formatTimestampHour(
                                   timestamp,
                                 );
-                                // final date = timestamp.toDate();
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
                                   child: TextMessage(

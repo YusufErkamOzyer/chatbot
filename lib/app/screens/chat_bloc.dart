@@ -21,11 +21,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         _messagesStream!,
         onData: (messages) {
           if (state is ChatSuccess) {
-            // sadece messages güncellensin, diğer alanlar korunsun
             final current = state as ChatSuccess;
             return current.copyWith(messages: messages);
           } else {
-            // uygulama ilk açılışta buraya düşecek
             return ChatSuccess(messages: messages);
           }
         },
