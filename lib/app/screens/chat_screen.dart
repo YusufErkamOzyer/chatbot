@@ -36,23 +36,9 @@ class ChatScreen extends StatelessWidget {
             conroller.text = state.currentText;
 
             return Scaffold(
+              resizeToAvoidBottomInset: true,
               appBar: AppTopBar(),
-              bottomNavigationBar: SafeArea(
-                child: TextSender(
-                  onChanged: (value) {
-                    context.read<ChatBloc>().add(UpdateCurrentText(value));
-                  },
-                  controller: conroller,
-                  onPressed: () {
-                    context.read<ChatBloc>().add(
-                      AddFirebaseMessage(state.currentText, "user"),
-                    );
-                    context.read<ChatBloc>().add(
-                      SendMessageToChatbot(state.currentText),
-                    );
-                  },
-                ),
-              ),
+
               body: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -91,6 +77,22 @@ class ChatScreen extends StatelessWidget {
                             ];
                           }).toList(),
                         ),
+                      ),
+                      TextSender(
+                        onChanged: (value) {
+                          context.read<ChatBloc>().add(
+                            UpdateCurrentText(value),
+                          );
+                        },
+                        controller: conroller,
+                        onPressed: () {
+                          context.read<ChatBloc>().add(
+                            AddFirebaseMessage(state.currentText, "user"),
+                          );
+                          context.read<ChatBloc>().add(
+                            SendMessageToChatbot(state.currentText),
+                          );
+                        },
                       ),
                       ChatbotLoading(isLoading: state.isLoading),
                     ],
