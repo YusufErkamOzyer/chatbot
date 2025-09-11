@@ -19,6 +19,7 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final conroller = TextEditingController();
     return BlocProvider(
       create: (_) => ChatBloc()..add(LoadMessages()),
       child: BlocBuilder<ChatBloc, ChatState>(
@@ -34,8 +35,8 @@ class ChatScreen extends StatelessWidget {
 
             final sortedDates = groupedMessages.keys.toList()
               ..sort((a, b) => b.compareTo(a));
+            conroller.text = state.currentText;
 
-            print("Loading bool state is ${state.isLoading}");
             return Scaffold(
               appBar: AppTopBar(),
               bottomNavigationBar: SafeArea(
@@ -43,7 +44,7 @@ class ChatScreen extends StatelessWidget {
                   onChanged: (value) {
                     context.read<ChatBloc>().add(UpdateCurrentText(value));
                   },
-                  controller: TextEditingController(text: state.currentText),
+                  controller: conroller,
                   onPressed: () {
                     context.read<ChatBloc>().add(
                       AddFirebaseMessage(state.currentText, "user"),
