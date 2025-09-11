@@ -28,7 +28,10 @@ class ChatbotLoading extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 16.0),
-                ChatBotText(data: "Loading...", type: MessageType.away),
+                ChatBotText(
+                  data: "Chatbot thinking...",
+                  type: MessageType.away,
+                ),
               ],
             ),
           )
