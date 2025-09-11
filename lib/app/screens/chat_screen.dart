@@ -34,6 +34,8 @@ class ChatScreen extends StatelessWidget {
 
             final sortedDates = groupedMessages.keys.toList()
               ..sort((a, b) => b.compareTo(a));
+
+            print("Loading bool state is ${state.isLoading}");
             return Scaffold(
               appBar: AppTopBar(),
               bottomNavigationBar: SafeArea(
@@ -92,7 +94,7 @@ class ChatScreen extends StatelessWidget {
                           }).toList(),
                         ),
                       ),
-                      ChatbotLoading(isLoading: true),
+                      ChatbotLoading(isLoading: state.isLoading),
                     ],
                   ),
                 ),
