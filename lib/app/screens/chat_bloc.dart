@@ -19,7 +19,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       _messagesStream = FirebaseService().getMessagesStream();
       await emit.forEach<List<Map<String, dynamic>>>(
         _messagesStream!,
-        onData: (messages) => ChatSuccess(messages: messages),
+        onData: (messages) {
+          if (state is ChatSuccess) {
+            // sadece messages güncellensin, diğer alanlar korunsun
+            final current = state as ChatSuccess;
+            return current.copyWith(messages: messages);
+          } else {
+            // uygulama ilk açılışta buraya düşecek
+            return ChatSuccess(messages: messages);
+          }
+        },
         onError: (e, _) => ChatError(e.toString()),
       );
     } catch (e) {
@@ -37,7 +46,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       await FirebaseService().addNewMessage(event.text, event.sender);
       if (state is ChatSuccess) {
         final currentState = state as ChatSuccess;
-        emit(currentState.copyWith(currentText: ""));
+        emit(currentState.copyWith(currentText: "", isLoading: true));
       }
     } catch (e) {
       emit(ChatError(e.toString()));
@@ -49,13 +58,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     if (event.message.trim().isEmpty) return;
-
+    if (state is ChatSuccess) {
+      final currentState = state as ChatSuccess;
+      emit(currentState.copyWith(isLoading: true));
+    }
     try {
       final response = await ChatbotService().sendMessage(event.message);
       await FirebaseService().addNewMessage(response!.response, "bot");
       if (state is ChatSuccess) {
         final currentState = state as ChatSuccess;
-        emit(currentState.copyWith(currentText: ""));
+        emit(currentState.copyWith(currentText: "", isLoading: false));
       }
     } catch (e) {
       emit(ChatError(e.toString()));
